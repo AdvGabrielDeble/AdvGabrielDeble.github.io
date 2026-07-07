@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 92" role="img" aria-labelledby="title desc">
+  <title id="title">Gabriel Deble Advocacia</title>
+  <desc id="desc">Logo compacto em verde profundo e dourado.</desc>
+  <g transform="translate(4 5)">
+    <path d="M50.5 11C40.8 4.9 26.1 6 18.4 14.4C8.1 25.7 8.9 47.1 21.5 58.4C29.3 65.4 41.6 67.7 51.9 63.4" fill="none" stroke="#075A38" stroke-width="4.6" stroke-linecap="round"/>
+    <path d="M32.2 17.5V68.6H49.8C65.4 68.6 77.6 57.5 77.6 43.2C77.6 28.6 65.3 17.5 49.9 17.5H32.2Z" fill="none" stroke="#075A38" stroke-width="4.6" stroke-linejoin="round"/>
+    <path d="M47.6 42.3H72.1" stroke="#B88A2E" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+  <line x1="101" y1="14" x2="101" y2="78" stroke="#B88A2E" stroke-width="1.6"/>
+  <text x="121" y="35" fill="#075A38" font-family="Georgia, 'Times New Roman', serif" font-size="30" letter-spacing="1.2">Gabriel</text>
+  <line x1="121" y1="48" x2="158" y2="48" stroke="#B88A2E" stroke-width="1"/>
+  <text x="168" y="53" fill="#B88A2E" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="5.2">Advocacia</text>
+  <line x1="292" y1="48" x2="332" y2="48" stroke="#B88A2E" stroke-width="1"/>
+  <text x="121" y="78" fill="#075A38" font-family="Georgia, 'Times New Roman', serif" font-size="34" letter-spacing="1.1">Deble</text>
+</svg>
