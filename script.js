@@ -1,6 +1,6 @@
 // Configuração central. Substituir pelo número oficial do escritório, com DDI e DDD.
 // Exemplo: 5553999999999
-const WHATSAPP_NUMBER = "5553999529993";
+const WHATSAPP_NUMBER = "555331975015";
 
 function whatsappUrl(message) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

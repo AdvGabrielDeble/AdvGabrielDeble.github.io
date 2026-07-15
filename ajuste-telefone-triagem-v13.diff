@@ -1,0 +1,13 @@
+diff --git a/script.js b/script.js
+--- a/script.js
++++ b/script.js
+@@
+-const WHATSAPP_NUMBER = "5553999529993";
++const WHATSAPP_NUMBER = "555331975015";
+
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@
+-https://wa.me/5553999529993
++https://wa.me/555331975015
