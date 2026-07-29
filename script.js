@@ -1,110 +1,78 @@
-// Configuração central. Substituir pelo número oficial do escritório, com DDI e DDD.
-// Exemplo: 5553999999999
+"use strict";
+
 const WHATSAPP_NUMBER = "555331975015";
+
+const whatsappMessages = {
+  incapacidade:
+    "Olá, meu benefício por incapacidade foi negado, cessado ou está demorando. Gostaria de organizar meu caso para análise.",
+  geral:
+    "Olá, gostaria de atendimento sobre uma situação previdenciária. Não tenho certeza de qual benefício ou caminho jurídico se aplica ao meu caso.",
+};
 
 function whatsappUrl(message) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-// Atualiza todos os links de WhatsApp a partir de data-message.
-document.querySelectorAll(".js-whatsapp").forEach((link) => {
-  const message = link.getAttribute("data-message") || "Olá, gostaria de atendimento previdenciário.";
-  link.setAttribute("href", whatsappUrl(message));
+document.querySelectorAll("[data-whatsapp]").forEach((link) => {
+  const type = link.dataset.whatsapp;
+  const message = whatsappMessages[type];
+
+  if (message) {
+    link.href = whatsappUrl(message);
+  }
 });
 
-const form = document.getElementById("leadForm");
-if (form) {
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
+const formSection = document.getElementById("formulario");
+const situationField = document.getElementById("situacao");
+const reportField = document.getElementById("relato");
 
-    const data = new FormData(form);
-    const nome = data.get("nome")?.toString().trim() || "Não informado";
-    const cidade = data.get("cidade")?.toString().trim() || "Não informado";
-    const situacao = data.get("situacao")?.toString().trim() || "Não informado";
-    const relato = data.get("relato")?.toString().trim() || "Não informado";
+function updateReportPlaceholder() {
+  if (!reportField || !situationField) return;
 
-    const mensagemPadrao =
-      "Olá, gostaria de atendimento previdenciário sobre benefício por incapacidade. Preenchi a triagem rápida da página e gostaria de encaminhar meu caso para análise inicial.";
-
-    const dadosFormulario = [
-      "DADOS INFORMADOS NO FORMULÁRIO:",
-      `Nome completo: ${nome}`,
-      `Cidade/UF: ${cidade}`,
-      `Situação: ${situacao}`,
-      `Relato inicial: ${relato}`,
-    ].join("\n");
-
-    const autorizacao =
-      "Autorizo o contato pelo WhatsApp e o uso das informações enviadas para avaliação inicial do atendimento jurídico. Sei que a análise final depende da revisão do advogado responsável e que não há promessa de resultado.";
-
-    const message = `${mensagemPadrao}\n\n${dadosFormulario}\n\n${autorizacao}`;
-
-    window.open(whatsappUrl(message), "_blank", "noopener,noreferrer");
-  });
+  reportField.placeholder =
+    situationField.value === "Não sei qual benefício se aplica"
+      ? "Conte o que aconteceu, se já houve pedido no INSS e qual é a tua principal dificuldade hoje."
+      : "Ex.: fiz perícia, o benefício foi negado, ainda estou em tratamento e não consigo voltar ao trabalho.";
 }
 
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-if (!prefersReducedMotion) {
-  const revealCandidates = document.querySelectorAll(
-    ".hero__copy, .hero-panel, .trustbar__inner, .card, .split > *, .steps li, .section-heading, .proof-box, .form-grid > *, .faq details, .final-cta__box"
-  );
-
-  revealCandidates.forEach((element, index) => {
-    element.classList.add("reveal");
-
-    if (element.classList.contains("hero-panel") || element.matches(".form-grid > :last-child")) {
-      element.classList.add("reveal--right");
+document.querySelectorAll("[data-route]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (situationField) {
+      situationField.value = button.dataset.route || "";
+      updateReportPlaceholder();
     }
 
-    if (element.matches(".split > :first-child") || element.matches(".form-grid > :first-child")) {
-      element.classList.add("reveal--left");
-    }
-
-    if (element.classList.contains("card") || element.matches(".steps li")) {
-      element.classList.add("reveal--scale");
-      const groupIndex = Array.from(element.parentElement.children).indexOf(element);
-      element.style.setProperty("--reveal-delay", `${Math.min(groupIndex * 70, 280)}ms`);
-    } else {
-      element.style.setProperty("--reveal-delay", `${Math.min(index * 18, 160)}ms`);
-    }
+    formSection?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
+});
 
-  const revealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
-  );
+situationField?.addEventListener("change", updateReportPlaceholder);
 
-  revealCandidates.forEach((element) => revealObserver.observe(element));
-}
+document.getElementById("lead-form")?.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-const topbar = document.querySelector(".topbar");
-if (topbar) {
-  const updateTopbar = () => {
-    topbar.classList.toggle("is-scrolled", window.scrollY > 8);
-  };
-  updateTopbar();
-  window.addEventListener("scroll", updateTopbar, { passive: true });
-}
+  const form = event.currentTarget;
 
+  if (!(form instanceof HTMLFormElement) || !form.reportValidity()) {
+    return;
+  }
 
-const backToTop = document.querySelector(".back-to-top");
-if (backToTop) {
-  const updateBackToTop = () => {
-    backToTop.classList.toggle("is-visible", window.scrollY > 520);
-  };
+  const data = new FormData(form);
+  const name = String(data.get("nome") || "").trim();
+  const city = String(data.get("cidade") || "").trim();
+  const situation = String(data.get("situacao") || "").trim();
+  const report = String(data.get("relato") || "").trim();
 
-  updateBackToTop();
-  window.addEventListener("scroll", updateBackToTop, { passive: true });
+  const message = [
+    "Olá, gostaria de encaminhar minha situação previdenciária para triagem.",
+    "",
+    `Nome: ${name}`,
+    `Cidade/UF: ${city}`,
+    `Situação informada: ${situation}`,
+    `Relato breve: ${report}`,
+    "",
+    "Gostaria que o escritório analisasse os fatos e identificasse o benefício ou encaminhamento jurídico adequado.",
+  ].join("\n");
 
-  backToTop.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
-  });
-}
+  window.open(whatsappUrl(message), "_blank", "noopener,noreferrer");
+});

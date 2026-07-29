@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://advgabrieldeble.com.br/sitemap.xml
