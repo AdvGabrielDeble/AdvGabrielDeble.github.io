@@ -76,3 +76,82 @@ document.getElementById("lead-form")?.addEventListener("submit", (event) => {
 
   window.open(whatsappUrl(message), "_blank", "noopener,noreferrer");
 });
+
+function setupPremiumInteractions() {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const topbar = document.querySelector(".topbar");
+
+  const progress = document.createElement("div");
+  progress.className = "scroll-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.prepend(progress);
+
+  let ticking = false;
+
+  function updateScrollState() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const maxScroll = Math.max(
+      document.documentElement.scrollHeight - window.innerHeight,
+      1,
+    );
+    const progressScale = Math.min(scrollTop / maxScroll, 1);
+
+    progress.style.transform = `scaleX(${progressScale})`;
+    topbar?.classList.toggle("is-scrolled", scrollTop > 14);
+    ticking = false;
+  }
+
+  function requestScrollUpdate() {
+    if (!ticking) {
+      window.requestAnimationFrame(updateScrollState);
+      ticking = true;
+    }
+  }
+
+  updateScrollState();
+  window.addEventListener("scroll", requestScrollUpdate, { passive: true });
+  window.addEventListener("resize", requestScrollUpdate);
+
+  const revealTargets = document.querySelectorAll([
+    ".section-heading",
+    ".card",
+    ".route-box",
+    ".route-card",
+    ".steps li",
+    ".proof-box",
+    ".lead-form",
+    ".faq details",
+    ".final-cta__box",
+    ".trustbar span",
+    ".form-assurance",
+  ].join(","));
+
+  revealTargets.forEach((element, index) => {
+    element.dataset.reveal = "";
+    element.style.transitionDelay = `${Math.min(index % 6, 5) * 55}ms`;
+  });
+
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    revealTargets.forEach((element) => element.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      rootMargin: "0px 0px -10% 0px",
+      threshold: 0.12,
+    },
+  );
+
+  revealTargets.forEach((element) => observer.observe(element));
+}
+
+setupPremiumInteractions();

@@ -1215,6 +1215,457 @@ textarea:focus-visible {
   }
 }
 
+
+
+/* ===== Camada premium v14: movimento, profundidade e acabamento ===== */
+:root {
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --shadow-premium: 0 34px 92px rgba(4, 46, 31, 0.16);
+  --shadow-premium-soft: 0 22px 58px rgba(4, 46, 31, 0.10);
+  --glass-line: rgba(255, 255, 255, 0.52);
+}
+
+::selection {
+  background: rgba(184, 138, 46, 0.28);
+  color: var(--green-950);
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(199, 154, 60, 0.11), transparent 26rem),
+    radial-gradient(circle at 94% 24%, rgba(7, 90, 56, 0.10), transparent 28rem),
+    linear-gradient(180deg, #fbfdfb 0%, var(--green-050) 44%, #ffffff 100%);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(4, 46, 31, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(4, 46, 31, 0.022) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.62), transparent 72%);
+}
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-700), var(--gold-500), var(--green-700));
+  box-shadow: 0 0 18px rgba(184, 138, 46, 0.46);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.topbar,
+.topbar__inner,
+.brand__logo {
+  transition:
+    height 0.36s var(--ease-luxury),
+    width 0.36s var(--ease-luxury),
+    background 0.36s var(--ease-standard),
+    box-shadow 0.36s var(--ease-standard),
+    border-color 0.36s var(--ease-standard),
+    transform 0.36s var(--ease-luxury);
+}
+
+.topbar.is-scrolled {
+  border-bottom-color: rgba(201, 215, 204, 0.82);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 18px 46px rgba(10, 44, 28, 0.08);
+}
+
+.topbar.is-scrolled .topbar__inner {
+  height: 78px;
+}
+
+.topbar.is-scrolled .brand__logo {
+  width: 174px;
+}
+
+.button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 0.32s var(--ease-luxury),
+    box-shadow 0.32s var(--ease-luxury),
+    background 0.22s,
+    border-color 0.22s,
+    color 0.22s;
+}
+
+.button::after {
+  position: absolute;
+  inset: -70% auto -70% -45%;
+  z-index: -1;
+  width: 42%;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+  transform: translateX(-130%) rotate(18deg);
+  transition: transform 0.7s var(--ease-luxury);
+}
+
+.button:hover::after {
+  transform: translateX(470%) rotate(18deg);
+}
+
+.button:hover {
+  box-shadow: 0 22px 52px rgba(7, 90, 56, 0.20);
+  transform: translateY(-3px) scale(1.012);
+}
+
+.button:active {
+  transform: translateY(-1px) scale(0.992);
+}
+
+.hero {
+  min-height: calc(100vh - 98px);
+  display: grid;
+  align-items: center;
+  background:
+    radial-gradient(circle at 72% 12%, rgba(184, 138, 46, 0.18), transparent 32rem),
+    radial-gradient(circle at 15% 82%, rgba(7, 90, 56, 0.10), transparent 30rem),
+    linear-gradient(135deg, #fff 0%, #f7fbf8 44%, #eef7f2 100%);
+}
+
+.hero::before {
+  animation: premiumOrb 14s ease-in-out infinite alternate;
+}
+
+.hero::after {
+  animation: premiumOrb 18s ease-in-out infinite alternate-reverse;
+}
+
+.hero__content > * {
+  animation: heroRise 0.82s var(--ease-luxury) both;
+}
+
+.hero__content > *:nth-child(2) { animation-delay: 0.07s; }
+.hero__content > *:nth-child(3) { animation-delay: 0.14s; }
+.hero__content > *:nth-child(4) { animation-delay: 0.21s; }
+.hero__content > *:nth-child(5) { animation-delay: 0.28s; }
+.hero__content > *:nth-child(6) { animation-delay: 0.35s; }
+
+.hero-panel {
+  animation: panelIn 0.95s var(--ease-luxury) 0.20s both;
+  border-color: rgba(255, 255, 255, 0.70);
+  box-shadow: var(--shadow-premium);
+}
+
+
+.proof-box,
+.route-box,
+.final-cta__box,
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-panel::before,
+.final-cta__box::after,
+.proof-box::after,
+.route-box::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(135deg, rgba(255,255,255,0.50), transparent 34%, rgba(184,138,46,0.10));
+  opacity: 0.72;
+}
+
+.hero-panel > *,
+.final-cta__box > *,
+.proof-box > *,
+.route-box > * {
+  position: relative;
+  z-index: 1;
+}
+
+.portrait-card {
+  box-shadow: 0 22px 56px rgba(4, 46, 31, 0.10);
+  transform: translateZ(0);
+  transition:
+    transform 0.55s var(--ease-luxury),
+    box-shadow 0.55s var(--ease-luxury),
+    border-color 0.55s var(--ease-luxury);
+}
+
+.portrait-card::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(180deg, transparent 46%, rgba(4, 46, 31, 0.22)),
+    radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.34), transparent 22rem);
+}
+
+.hero-panel:hover .portrait-card {
+  border-color: rgba(184, 138, 46, 0.38);
+  box-shadow: 0 32px 82px rgba(4, 46, 31, 0.15);
+  transform: translateY(-4px) scale(1.006);
+}
+
+.portrait-card__badge {
+  z-index: 1;
+  border-color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.trustbar {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.trustbar::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(184, 138, 46, 0.08), transparent);
+  transform: translateX(-100%);
+  animation: trustSweep 9s ease-in-out infinite;
+}
+
+.card,
+.route-card,
+.steps li,
+details,
+.lead-form,
+.proof-box,
+.route-box,
+.final-cta__box,
+.form-assurance {
+  transition:
+    transform 0.42s var(--ease-luxury),
+    box-shadow 0.42s var(--ease-luxury),
+    border-color 0.32s var(--ease-standard),
+    background 0.32s var(--ease-standard),
+    opacity 0.7s var(--ease-luxury),
+    filter 0.7s var(--ease-luxury);
+}
+
+.card,
+.route-card,
+.steps li,
+details {
+  will-change: transform;
+}
+
+.card::before,
+.route-card::before,
+.steps li::after,
+details::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(184, 138, 46, 0.42), transparent);
+  opacity: 0;
+  transition: opacity 0.28s var(--ease-standard);
+}
+
+.card:hover::before,
+.route-card:hover::before,
+.steps li:hover::after,
+details:hover::before {
+  opacity: 1;
+}
+
+.card:hover,
+.route-card:hover,
+.steps li:hover,
+details:hover {
+  border-color: rgba(184, 138, 46, 0.44);
+  box-shadow: var(--shadow-premium-soft);
+  transform: translateY(-5px);
+}
+
+.steps li,
+details {
+  overflow: hidden;
+}
+
+.route-card__action {
+  transition: transform 0.28s var(--ease-luxury), color 0.22s;
+}
+
+.route-card:hover .route-card__action {
+  color: var(--gold-700);
+  transform: translateX(5px);
+}
+
+.lead-form {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 34px 92px rgba(0, 0, 0, 0.20);
+}
+
+.lead-form input,
+.lead-form select,
+.lead-form textarea {
+  transition:
+    border-color 0.22s,
+    box-shadow 0.22s,
+    transform 0.22s,
+    background 0.22s;
+}
+
+.lead-form input:hover,
+.lead-form select:hover,
+.lead-form textarea:hover {
+  border-color: rgba(184, 138, 46, 0.52);
+}
+
+.lead-form input:focus,
+.lead-form select:focus,
+.lead-form textarea:focus {
+  box-shadow: 0 10px 26px rgba(4, 46, 31, 0.08);
+  transform: translateY(-1px);
+}
+
+.faq details {
+  position: relative;
+}
+
+.faq summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  content: "+";
+  background: var(--green-100);
+  color: var(--green-800);
+  font-weight: 950;
+  transition: transform 0.3s var(--ease-luxury), background 0.22s, color 0.22s;
+}
+
+.faq details[open] summary::after {
+  background: var(--green-800);
+  color: #fff;
+  transform: rotate(45deg);
+}
+
+.final-cta__box {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 82% 0%, rgba(230, 201, 121, 0.20), transparent 22rem),
+    linear-gradient(135deg, var(--green-800), var(--green-950));
+}
+
+.whatsapp-float {
+  transition:
+    transform 0.32s var(--ease-luxury),
+    box-shadow 0.32s var(--ease-luxury),
+    background 0.22s;
+}
+
+.whatsapp-float:hover {
+  box-shadow: 0 26px 58px rgba(7, 90, 56, 0.34);
+}
+
+[data-reveal] {
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(26px) scale(0.985);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+}
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(30px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes premiumOrb {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-18px, 22px, 0) scale(1.045);
+  }
+}
+
+@keyframes trustSweep {
+  0%, 38% {
+    transform: translateX(-100%);
+  }
+  68%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 1040px) {
+  .hero {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar.is-scrolled .topbar__inner {
+    height: 76px;
+  }
+
+  .topbar.is-scrolled .brand__logo {
+    width: 154px;
+  }
+
+  [data-reveal] {
+    transform: translateY(18px) scale(0.99);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -1225,5 +1676,7 @@ textarea:focus-visible {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
