@@ -64,3 +64,14 @@ Alterações:
 
 Observação:
 O pacote v14 de origem não continha a pasta completa `assets/`. Ao publicar, preservar os assets já existentes no repositório.
+
+
+## v15.1 — páginas robustas e SEO nacional
+
+- estratégia deixou de focar apenas Bagé/região;
+- adicionadas páginas para atendimento previdenciário online e alcance nacional;
+- páginas internas reescritas com conteúdo mais robusto;
+- preservada página local para Bagé;
+- sitemap atualizado;
+- dados estruturados com `areaServed` Brasil, RS e Bagé;
+- linguagem mantida em padrão informativo e ético.
