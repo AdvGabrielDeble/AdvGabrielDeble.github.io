@@ -47,3 +47,20 @@ Esta versão mantém a estrutura e a copy da versão-base enviada, mas adiciona:
 3. Em **Settings → Pages**, confirme branch `main` e pasta `/ (root)`.
 4. Após publicar, abra `https://advgabrieldeble.com.br/?v=14-premium` para forçar leitura da versão nova.
 5. Teste o formulário de triagem e confira se o WhatsApp abre com `phone=555331975015`.
+
+
+## v15 — SEO técnico e páginas internas
+
+Base utilizada: `lp-escritorio-v14-premium-github.zip`.
+
+Alterações:
+- SEO técnico da página inicial;
+- imagem Open Graph institucional;
+- sitemap e robots atualizados;
+- dados estruturados JSON-LD;
+- 8 páginas internas de ranqueamento;
+- links internos no rodapé;
+- arquivo operacional para Search Console.
+
+Observação:
+O pacote v14 de origem não continha a pasta completa `assets/`. Ao publicar, preservar os assets já existentes no repositório.
