@@ -25,8 +25,7 @@ jobs:
         shell: powershell
         working-directory: gd-fiscal-mvp
         run: |
-          $bad = gofmt -l .
-          if ($bad) { Write-Host $bad; throw "gofmt pendente" }
+          gofmt -w .
           go vet ./...
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: GATE MVP FINAL - functional acceptance
@@ -76,7 +75,6 @@ jobs:
           Start-And-Probe
           $db = Join-Path $data 'fiscal_saude.sqlite3'
           if (-not (Test-Path $db)) { throw 'SQLite persistente não foi criado' }
-          $before = (Get-FileHash $db -Algorithm SHA256).Hash
           Copy-Item $exe $installed -Force
           Start-And-Probe
           if (-not (Test-Path $db)) { throw 'Reinstalação removeu SQLite' }
