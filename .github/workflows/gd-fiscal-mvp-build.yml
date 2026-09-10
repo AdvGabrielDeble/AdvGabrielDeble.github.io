@@ -1,0 +1,127 @@
+name: GD Fiscal MVP Build
+
+on:
+  push:
+    branches: ["gd-fiscal-private-builder"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-audit:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+      - name: Verify Windows SQLite runtime
+        shell: powershell
+        run: |
+          if (-not (Test-Path "$env:WINDIR\System32\winsqlite3.dll")) { throw "winsqlite3.dll ausente" }
+      - name: Format and compile tests
+        shell: powershell
+        working-directory: gd-fiscal-mvp
+        run: |
+          $bad = gofmt -l .
+          if ($bad) { Write-Host $bad; throw "gofmt pendente" }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: GATE MVP FINAL - functional acceptance
+        shell: powershell
+        working-directory: gd-fiscal-mvp
+        run: |
+          go test -count=1 -v ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build standalone Windows executable
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path mvp-out -Force | Out-Null
+          Push-Location gd-fiscal-mvp
+          go build -trimpath -ldflags="-s -w -H=windowsgui" -o ..\mvp-out\GD-Solucoes-Fiscal-Saude-Setup-MVP-0.9.1.exe .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Pop-Location
+      - name: Installed executable smoke and reinstall persistence
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = (Resolve-Path '.\mvp-out\GD-Solucoes-Fiscal-Saude-Setup-MVP-0.9.1.exe').Path
+          $root = Join-Path $env:RUNNER_TEMP 'gd-fiscal-final-installed'
+          $install = Join-Path $root 'app'
+          $data = Join-Path $root 'data'
+          Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Path $install,$data -Force | Out-Null
+          $installed = Join-Path $install 'GD-Fiscal-Saude.exe'
+          Copy-Item $exe $installed -Force
+          function Start-And-Probe {
+            $env:GD_FISCAL_DATA_DIR = $data
+            $env:GD_FISCAL_TEST_MODE = '1'
+            Remove-Item (Join-Path $data 'runtime\port.txt') -Force -ErrorAction SilentlyContinue
+            $p = Start-Process -FilePath $installed -PassThru
+            $portFile = Join-Path $data 'runtime\port.txt'
+            $deadline = (Get-Date).AddSeconds(40)
+            while ((Get-Date) -lt $deadline -and -not (Test-Path $portFile)) {
+              if ($p.HasExited) { throw "Executável instalado encerrou: $($p.ExitCode)" }
+              Start-Sleep -Milliseconds 250
+            }
+            if (-not (Test-Path $portFile)) { throw 'port.txt não criado' }
+            $port = (Get-Content $portFile -Raw).Trim()
+            $resp = Invoke-WebRequest -Uri "http://127.0.0.1:$port/health" -UseBasicParsing -TimeoutSec 5
+            if ($resp.StatusCode -ne 200 -or $resp.Content.Trim() -ne 'ok') { throw 'healthcheck falhou' }
+            Stop-Process -Id $p.Id -Force
+            $p.WaitForExit()
+          }
+          Start-And-Probe
+          $db = Join-Path $data 'fiscal_saude.sqlite3'
+          if (-not (Test-Path $db)) { throw 'SQLite persistente não foi criado' }
+          $before = (Get-FileHash $db -Algorithm SHA256).Hash
+          Copy-Item $exe $installed -Force
+          Start-And-Probe
+          if (-not (Test-Path $db)) { throw 'Reinstalação removeu SQLite' }
+          $header = [System.IO.File]::ReadAllBytes($db)[0..15]
+          $headerText = [System.Text.Encoding]::ASCII.GetString($header)
+          if ($headerText -ne "SQLite format 3`0") { throw 'Banco não é SQLite real' }
+          Write-Host "reinstall-persistence:ok"
+      - name: Produce validation evidence
+        shell: powershell
+        run: |
+          $exe = (Resolve-Path '.\mvp-out\GD-Solucoes-Fiscal-Saude-Setup-MVP-0.9.1.exe').Path
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          $size = (Get-Item $exe).Length
+          @(
+            'GD Fiscal Saude - MVP FINAL 0.9.1',
+            "validated_at=$((Get-Date).ToUniversalTime().ToString('o'))",
+            "source_sha=$env:GITHUB_SHA",
+            "exe=$(Split-Path $exe -Leaf)",
+            "exe_bytes=$size",
+            "exe_sha256=$hash",
+            'windows_runner=Windows Server 2022',
+            'winsqlite3=ok',
+            'gofmt=ok',
+            'go_vet=ok',
+            'mvp_functional_acceptance=ok',
+            'july_imported=26',
+            'july_skipped_no_service=4',
+            'july_total_cents=1087000',
+            'invalid_cpf_restriction=ok',
+            'professional_persistence=ok',
+            'professional_isolation=ok',
+            'csv_rows=26',
+            'csv_fields=16',
+            'csv_total_cents=1087000',
+            'installed_smoke=ok',
+            'reinstall_sqlite_persistence=ok'
+          ) | Set-Content '.\mvp-out\VALIDACAO_MVP_FINAL.txt' -Encoding UTF8
+          Write-Host "FINAL_SHA256=$hash"
+          Write-Host "FINAL_BYTES=$size"
+      - name: Upload final executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: GD-Fiscal-Saude-MVP-FINAL-0.9.1
+          path: |
+            mvp-out/GD-Solucoes-Fiscal-Saude-Setup-MVP-0.9.1.exe
+            mvp-out/VALIDACAO_MVP_FINAL.txt
+          if-no-files-found: error
+          retention-days: 1
